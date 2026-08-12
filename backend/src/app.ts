@@ -27,7 +27,7 @@ app.use('/api/analytics', analyticsRoutes);
 app.use(errorHandler);
 // Allow all origins during setup, or specify your frontend domain once deployed
 app.use(cors({
-  origin: '*', 
+  origin: true, 
   credentials: true
 }));
 
