@@ -32,7 +32,7 @@
     "@types/cors": "^2.8.19",
     "@types/express": "^4.17.25",
     "@types/jsonwebtoken": "^9.0.10",
-    "@types/node": "^20.19.43",
+    "@types/node": "^26.2.0",
     "@types/pdfkit": "^0.17.6",
     "prisma": "^5.14.0",
     "ts-node": "^10.9.2",
