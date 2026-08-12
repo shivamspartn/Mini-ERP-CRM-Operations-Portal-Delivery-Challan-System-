@@ -55,9 +55,9 @@ model User {
   updatedAt DateTime @updatedAt
 
   // Relations
-  createdFollowUps     FollowUp[]      @relation("UserFollowUps")
+  createdFollowUps      FollowUp[]      @relation("UserFollowUps")
   createdStockMovements StockMovement[] @relation("UserStockMovements")
-  createdChallans      Challan[]       @relation("UserChallans")
+  createdChallans       Challan[]       @relation("UserChallans")
 
   @@map("users")
 }
@@ -145,110 +145,27 @@ model Challan {
   updatedAt     DateTime      @updatedAt
 
   // Relations
-  customer Customer      @relation(fields: [customerId], references: [id], onDelete: Restrict)
-  user     User          @relation("UserChallans", fields: [createdBy], references: [id])
+  customer Customer    @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  user     User        @relation("UserChallans", fields: [createdBy], references: [id])
   items    ChallanItem[]
 
   @@map("challans")
 }
 
 model ChallanItem {
-  id                 String  @id @default(uuid())
-  challanId          String
-  productId          String
+  id                  String   @id @default(uuid())
+  challanId           String
+  productId           String
   productNameSnapshot String
   skuSnapshot        String
-  unitPriceSnapshot  Decimal @db.Decimal(12, 2)
-  quantity           Int
-  subtotal           Decimal @db.Decimal(12, 2)
+  unitPriceSnapshot   Decimal  @db.Decimal(12, 2)
+  quantity            Int
+  subtotal            Decimal  @db.Decimal(12, 2)
+  createdAt           DateTime @default(now())
 
   // Relations
   challan Challan @relation(fields: [challanId], references: [id], onDelete: Cascade)
   product Product @relation(fields: [productId], references: [id], onDelete: Restrict)
 
   @@map("challan_items")
-}
-enum ChallanStatus {
-  DRAFT
-  CONFIRMED
-  CANCELLED
-}
-
-enum MovementType {
-  IN
-  OUT
-}
-
-model Customer {
-  id           String    @id @default(uuid())
-  customerName String
-  businessName String?
-  mobileNumber String?
-  address      String?
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-
-  challans     Challan[]
-}
-
-model Product {
-  id           String          @id @default(uuid())
-  productName  String
-  sku          String          @unique
-  unitPrice    Decimal         @db.Decimal(10, 2)
-  currentStock Int             @default(0)
-  createdAt    DateTime        @default(now())
-  updatedAt    DateTime        @updatedAt
-
-  challanItems   ChallanItem[]
-  stockMovements StockMovement[]
-}
-
-model Challan {
-  id            String        @id @default(uuid())
-  challanNumber String        @unique
-  status        ChallanStatus @default(DRAFT)
-  totalQuantity Int           @default(0)
-  
-  customerId    String
-  customer      Customer      @relation(fields: [customerId], references: [id])
-  
-  createdBy     String
-  user          User          @relation(fields: [createdBy], references: [id])
-
-  items         ChallanItem[]
-  
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-}
-
-model ChallanItem {
-  id                  String   @id @default(uuid())
-  challanId           String
-  challan             Challan  @relation(fields: [challanId], references: [id], onDelete: Cascade)
-  
-  productId           String
-  product             Product  @relation(fields: [productId], references: [id])
-  
-  // Snapshots preserve pricing & details even if product master changes later
-  productNameSnapshot String
-  skuSnapshot         String
-  unitPriceSnapshot   Decimal  @db.Decimal(10, 2)
-  quantity            Int
-  subtotal            Decimal  @db.Decimal(10, 2)
-
-  createdAt           DateTime @default(now())
-}
-
-model StockMovement {
-  id           String       @id @default(uuid())
-  productId    String
-  product      Product      @relation(fields: [productId], references: [id])
-  
-  quantity     Int
-  movementType MovementType
-  reason       String
-  createdBy    String
-  
-  createdAt    DateTime     @default(now())
 }
