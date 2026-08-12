@@ -25,5 +25,10 @@ app.use('/api/analytics', analyticsRoutes);
 
 // Centralized Error Middleware
 app.use(errorHandler);
+// Allow all origins during setup, or specify your frontend domain once deployed
+app.use(cors({
+  origin: '*', 
+  credentials: true
+}));
 
 export default app;
