@@ -1,34 +1,42 @@
 import express, { Application } from 'express';
 import cors from 'cors';
+
+// Import Routes
 import healthRoutes from './routes/health.routes';
 import authRoutes from './routes/auth.routes';
-import { errorHandler } from './middlewares/error.middleware';
 import customerRoutes from './routes/customer.routes';
-import productRoutes from './routes/product.routes'; // 👈 Added
-import challanRoutes from './routes/challan.routes'; // 👈 Added
+import productRoutes from './routes/product.routes';
+import challanRoutes from './routes/challan.routes';
 import analyticsRoutes from './routes/analytics.routes';
+
+// Import Middlewares
+import { errorHandler } from './middlewares/error.middleware';
 
 const app: Application = express();
 
-// Middlewares
-app.use(cors());
+// 1. CORS Configuration (Must come BEFORE route definitions)
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Allows local development, deployed Vercel frontend, and tools like Postman
+      callback(null, true);
+    },
+    credentials: true,
+  })
+);
+
+// 2. Body Parser Middleware
 app.use(express.json());
 
-// Routes
+// 3. Application Routes
 app.use('/api/health', healthRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/customers', customerRoutes);
-app.use('/api/products', productRoutes); // 👈 Added
+app.use('/api/products', productRoutes);
 app.use('/api/challans', challanRoutes);
 app.use('/api/analytics', analyticsRoutes);
 
-
-// Centralized Error Middleware
+// 4. Centralized Error Handling Middleware (Must stay at the bottom)
 app.use(errorHandler);
-// Allow all origins during setup, or specify your frontend domain once deployed
-app.use(cors({
-  origin: true, 
-  credentials: true
-}));
 
 export default app;
